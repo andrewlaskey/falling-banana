@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+      <title>Falling Bananas</title>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+      <script>
+        
+        $(function() {
+        //**************INIT GAME VARIABLES*****************
+		var canvas = document.getElementById('canvas');
+		var context = canvas.getContext('2d');
+		
+		var world = {
+			w: canvas.width,
+			h: canvas.height
+		}
+		
+		var score = 0;
+		var lives = 5;
+		
+		var catcher = {
+			x: 200,
+			y: 337,
+			w: 21,
+			h: 38,
+			vX: 0,
+			vY: 0,
+			s: 10,
+			leg: 1,
+			move: 'NONE',
+			hit: 'NONE'
+		}
+		
+		var gravity = 6;
+		
+		function banana(){
+			this.x 	= Math.random() * world.w;
+			this.y 	= 0;
+			this.vX = 0;
+			this.vY = 0;
+			this.s 	= gravity,
+			this.w	= 8;
+			this.h	= 13;
+			this.points = 1;
+			this.draw = function (type) {
+				context.fillStyle = 'rgb(255,255,51)';
+				if (type == 'END') {
+					context.fillRect(this.x,this.y + this.h*.9,this.w,this.h);
+				} else {
+					context.beginPath();
+					context.moveTo(this.x, this.y);
+					context.lineTo(this.x, this.y + this.h/2);
+					context.lineTo(this.x + this.w, this.y + this.h);
+					context.lineTo(this.x + this.w*.4, this.y + this.h/2);
+					context.lineTo(this.x, this.y);
+					context.fill();
+				}
+			}
+		}
+		
+		function apple(){
+			this.x 	= Math.random() * world.w;
+			this.y 	= 0;
+			this.vX = 0;
+			this.vY = 0;
+			this.s 	= gravity,
+			this.w	= 7;
+			this.h 	= 7;
+			this.draw = function (type) {
+				if (type == 'END') {
+					context.fillStyle = 'rgb(235,32,57)';
+					
+					context.beginPath();
+					context.arc(this.x - this.w, this.y - this.w,this.w/2,0,Math.PI*2,true);
+					context.fill();
+					
+					context.beginPath();
+					context.arc(this.x - this.w, this.y + this.w,this.w/2,0,Math.PI*2,true);
+					context.fill();
+					
+					context.beginPath();
+					context.arc(this.x + this.w, this.y - this.w,this.w/2,0,Math.PI*2,true);
+					context.fill();
+					
+					context.beginPath();
+					context.arc(this.x + this.w, this.y + this.w,this.w/2,0,Math.PI*2,true);
+					context.fill();
+				} else {
+					context.fillStyle = 'rgb(235,32,57)';
+					context.beginPath();
+					context.arc(this.x, this.y,this.w,0,Math.PI*2,true);
+					context.fill();
+				}
+			}
+		}
+		
+		function lightBeam(){
+			this.top = {x: 0, w: 15};
+			this.bottom = {x: 0, w: 30};
+			this.v = .2;
+			this.on = 1;
+			this.draw = function(){
+				context.fillStyle = 'rgba(255,255,212,0.1)';
+				context.beginPath();
+				context.moveTo(this.top.x, 0);
+				context.lineTo(this.bottom.x, world.h);
+				context.lineTo(this.bottom.x + this.bottom.w, world.h);
+				context.lineTo(this.top.x + this.top.w, 0);
+				context.fill();
+			}
+		}
+		
+		var banProb = 15;
+		var bananas = [];
+		
+		var appleProb = 5;
+		var apples = [];
+		
+		var lights = [];
+		var dayNight = 0; //0 = dawn
+		//**************************************************
+		
+		//***************HELP FUNCTIONS*********************
+		function calculateDistance(x1, y1, x2, y2){
+			x = Math.abs(x1 - x2);
+			y = Math.abs(y1 - y2);
+			
+			return Math.sqrt((x * x) + (y * y));
+		}
+		
+		function collisionDetect(x1, y1, w1, h1, x2, y2, w2, h2){
+			var left1;
+			var right1;
+			var top1;
+			var bottom1;
+			
+			var left2;
+			var right2;
+			var top2;
+			var bottom2;
+			
+			left1 = x1;
+			left2 = x2;
+			right1 = x1 + w1;
+			right2 = x2 + w2;
+			top1 = y1;
+			top2 = y2;
+			bottom1 = y1 + h1;
+			bottom2 = y2 + h2;
+			
+			if (bottom1 < top2) return 0;
+			if (top1 > bottom2) return 0;
+			
+			if (right1 < left2) return 0;
+			if (left1 > right2) return 0;
+			
+			return 1;
+		}
+		//**************************************************
+
+		//**************DRAW FUNCTIONS**********************
+		function drawCatcher(){
+			var front;
+			var back; 
+			if (catcher.hit == 'LIGHT'){
+				front = 'rgb(212,176,140)';
+				back = 'rgb(176,126,76)';
+			} else if (catcher.hit == 'DARK'){
+				front = 'rgb(51,29,8)';
+				back = 'rgb(24,15,4)';
+			} else {
+				front = 'rgb(176,126,76)';
+				back = 'rgb(51,29,8)';
+			}
+			//draw top
+			context.fillStyle = front;
+			context.beginPath();
+			context.moveTo(catcher.x,catcher.y);
+			context.lineTo(catcher.x,catcher.y + catcher.h*.5);
+			context.lineTo(catcher.x + catcher.w*.33, catcher.y + catcher.h*.5);
+			context.lineTo(catcher.x + catcher.w*.33, catcher.y + catcher.h*.33);
+			context.lineTo(catcher.x + catcher.w, catcher.y + catcher.h*.18);
+			context.lineTo(catcher.x + catcher.w*.3, catcher.y + catcher.h*.18);
+			context.lineTo(catcher.x + catcher.w*.3, catcher.y + catcher.h*.14);
+			context.lineTo(catcher.x + catcher.w*.33, catcher.y + catcher.h*.14);
+			context.lineTo(catcher.x + catcher.w*.33, catcher.y);
+			context.closePath();
+			context.fill();
+			
+			if (catcher.leg == 1){
+				drawCatcherBack(back);
+				drawCatcherFront(front);
+			} else {
+				drawCatcherFront(back);
+				drawCatcherBack(front);
+			}
+			
+			
+		}
+		
+		function drawCatcherBack(fillColor) {
+			//left leg
+			context.fillStyle = fillColor;
+			context.beginPath();
+			context.moveTo(catcher.x,catcher.y + catcher.h*.5);//back of hip
+			context.lineTo(catcher.x,catcher.y + catcher.h*.7);//back of knee
+			context.lineTo(catcher.x - catcher.w*.33,catcher.y + catcher.h);//to toe
+			context.lineTo(catcher.x + catcher.w*.33,catcher.y + catcher.h*.7);//front of knee
+			context.lineTo(catcher.x + catcher.w*.33,catcher.y + catcher.h*.5);//front hip
+			context.closePath();
+			context.fill();
+		}
+		
+		function drawCatcherFront(fillColor){
+			context.fillStyle = fillColor;
+			context.beginPath();
+			context.moveTo(catcher.x,catcher.y + catcher.h*.5);
+			context.lineTo(catcher.x,catcher.y + catcher.h*.6);
+			context.lineTo(catcher.x + catcher.w*.38, catcher.y + catcher.h*.74);//back of knee
+			context.lineTo(catcher.x + catcher.w*.66, catcher.y + catcher.h);//to Toe
+			context.lineTo(catcher.x + catcher.w*.66, catcher.y + catcher.h*.7);//front of knee
+			context.lineTo(catcher.x + catcher.w*.33, catcher.y + catcher.h*.5);//hip flexor
+			context.closePath();
+			context.fill();
+		}
+		
+		function displayScoreBoard(){
+			//Set the text font and color
+			context.fillStyle = 'rgb(255,255,255)';
+			context.font = "18px Helvetica, Ariel";
+			 
+			context.fillText(score,10,world.h-5);
+			context.fillText(lives,world.w - 10,world.h-5);
+			points = 0;
+		}
+		
+		
+		function drawGround(){
+			context.fillStyle = 'rgb(79,62,25)';
+			context.fillRect(0,world.h-25,world.w,world.h);
+		}
+		
+		function drawCanopy(){
+			context.fillStyle = 'rgb(43,142,60)';
+			context.fillRect(0,0,world.w,52);
+		}
+		
+		function drawBackground(){
+			//second canopy
+			context.fillStyle = 'rgba(31,103,41,0.8)';
+			context.fillRect(0,0,world.w,64);
+		
+			//trees row 1
+			context.fillStyle = 'rgb(160,101,48)';
+			context.fillRect(100,0,52,world.h);
+			//branch
+			context.beginPath();
+			context.moveTo(100, 112);
+			context.lineTo(42, 0);
+			context.lineTo(54, 0);
+			context.lineTo(100, 92);
+			context.closePath();
+			context.fill();
+					
+			context.fillRect(212,0,46,world.h);
+			context.fillRect(322,0,32,world.h);
+			context.fillRect(470,0,52,world.h);
+
+			//row 2
+			context.fillStyle = 'rgba(160,101,48,0.5)';
+			context.fillRect(52,0,16,world.h);
+			context.fillRect(276,0,14,world.h);
+			context.fillRect(412,0,18,world.h);
+		}
+		//**************************************************
+		
+		
+		//**************MOVE FUNCTIONS**********************
+		function moveCatcher(){
+			if (catcher.move == 'LEFT'){
+				catcher.vX = -catcher.s;
+				catcher.leg = catcher.leg * -1;
+			} else if (catcher.move == 'RIGHT'){
+				catcher.vX = catcher.s;
+				catcher.leg = catcher.leg * -1;
+			} else {
+				catcher.vX = 0;
+			}
+			// If paddle reaches the side of the screen, then don't let it move any further
+			if (catcher.x + catcher.vX < 0 || catcher.x + catcher.vX + catcher.w > world.w){
+				catcher.vX = 0; 
+			}
+			catcher.x = catcher.x + catcher.vX;
+		}
+		
+		function moveBananas(){
+			for (var i = 0; i < bananas.length; i++) {
+				bananas[i].vY = bananas[i].s;
+				bananas[i].y += bananas[i].vY;
+				
+				//collision check
+				if (bananas[i].y + bananas[i].h*.5 >= world.h - 40) {
+					bananas[i].draw('END');
+					bananas.splice(i,1);
+				} else if (collisionDetect(bananas[i].x,bananas[i].y,bananas[i].w,bananas[i].h, catcher.x, catcher.y, catcher.w, catcher.y)) {
+						score +=bananas[i].points;
+						bananas.splice(i,1);
+						catcher.hit = 'LIGHT';
+				} else {
+					bananas[i].draw('NORMAL');
+				}
+			}
+		}
+		
+		function moveApples(){
+			for (var i = 0; i < apples.length; i++) {
+				apples[i].vY = apples[i].s;
+				apples[i].y += apples[i].vY;
+				
+				//collision check
+				if (apples[i].y + apples[i].h*.5 > world.h - 40) {
+					apples[i].draw('END');
+					apples.splice(i,1);
+				} else if (collisionDetect(apples[i].x - apples[i].w,apples[i].y - apples[i].w,apples[i].w*2,apples[i].w*2, catcher.x, catcher.y, catcher.w, catcher.y)) {
+						apples[i].draw('END');
+						apples.splice(i,1);
+						lives -=1;
+						catcher.hit = 'DARK';
+						if (lives <= 0) {
+							endGame();
+						}
+				} else {
+					apples[i].draw('NORMAL');
+				}
+			}
+		}
+		
+		function moveLight(){
+			for (var i = 0; i < lights.length; i++) {
+				lights[i].bottom.x -= lights[i].v;
+				lights[i].draw();
+			}
+		}
+		//**************************************************
+		
+		//**************GENERATE OBJECTS********************
+		function addBanana() {
+			var prob = Math.random() * 100;
+			
+			if (prob < banProb) {
+				if (prob < 1) {
+					newB = new banana();
+					newB.w = 16;
+					newB.h = 20;
+					newB.points = 5;
+					bananas.push(newB);
+				} else {
+				bananas.push(new banana());
+				}
+			}
+		}
+		
+		function addApple() {
+			var prob = Math.random() * 100;
+			
+			if (prob < appleProb) {
+				apples.push(new apple());
+			}
+		}
+		
+		function createLights(){
+			beamsNum = Math.random() * 5;
+			
+			for (var i = 0; i < beamsNum; i++) {
+				newL = new lightBeam();
+				newL.top.x = Math.random() * world.w;
+				newL.bottom.x = newL.top.x + 30;
+				newL.bottom.w = 50;
+				lights.push(newL);
+			}
+		}
+		//**************************************************
+
+		//**************MAIN GAME LOOP**********************
+		function animate () {
+			//clear the screen
+			context.clearRect(0,0,world.w,world.h);
+			
+			//background
+			drawBackground();
+			
+			//lights
+			//moveLight();
+			
+			//bananas
+			addBanana();
+			moveBananas();
+			
+			//apples
+			addApple();
+			moveApples();
+			
+			//catcher
+			moveCatcher();
+			drawCatcher();
+			catcher.hit = 'NONE';
+			
+			//extra scenery
+			drawGround();
+			drawCanopy();
+			
+			//score
+			displayScoreBoard();
+		}
+		
+		function startGame(){
+			catcher.move = 'NONE';
+			catcher.vX = 0;
+
+			//createLights();
+			
+			// call the animate() function every 200ms until clearInterval(gameLoop) is called
+			gameLoop = setInterval(animate,30);
+
+			// Start Tracking Keystokes
+			$(document).keydown(function(evt) {
+				if (evt.keyCode == 39) {
+					catcher.move = 'RIGHT';
+				} else if (evt.keyCode == 37){
+					catcher.move = 'LEFT';
+				}
+			});         
+
+			$(document).keyup(function(evt) {
+				if (evt.keyCode == 39) {
+					catcher.move = 'NONE';
+				} else if (evt.keyCode == 37){
+					catcher.move = 'NONE';
+				}
+			}); 
+		}
+
+		function endGame(){
+			clearInterval(gameLoop);
+			context.fillText('The End!!!!',canvas.width/2,canvas.height/2);
+		}
+		//**************************************************
+
+		startGame();
+        });
+    </script>
+  </head>
+  <body>    
+    <style type="text/css">
+      canvas {
+        border:1px solid black;
+		background: #197329;
+      }
+    </style>
+    <canvas id="canvas" width="600" height="400"> 
+      Your browser does not support the HTML5 Canvas feature. This game uses new HTML5 features and will only work on the latest versions of Firefox, Safari or Chrome (and maybe Internet Explorer 9).         
+    </canvas>   
+  </body>
+</html>
