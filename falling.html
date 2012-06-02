@@ -40,6 +40,14 @@
 		
 		//********************************************************
 		
+		var ticker = {
+			t: 0,
+			tick: function() {
+				this.t += 1;
+				if (this.t > 100) { this.t = 0;}
+			}
+		}
+		
         //**************INIT GAME VARIABLES*****************
 		var canvas = document.getElementById('canvas');
 		var context = canvas.getContext('2d');
@@ -313,10 +321,14 @@
 		function moveCatcher(){
 			if (catcher.move == 'LEFT'){
 				catcher.vX = -catcher.s;
-				catcher.leg = catcher.leg * -1;
+				if (ticker.t % 3 == 0) {
+					catcher.leg = catcher.leg * -1;
+				}
 			} else if (catcher.move == 'RIGHT'){
 				catcher.vX = catcher.s;
-				catcher.leg = catcher.leg * -1;
+				if (ticker.t % 3 == 0) {
+					catcher.leg = catcher.leg * -1;
+				}
 			} else {
 				catcher.vX = 0;
 			}
@@ -474,11 +486,12 @@
 		}
 		
 		var loop;
-		var fps = 60;
+		var fps = 42;
 		function gameLoop() {
 			setTimeout(function() {
 				loop = window.requestAnimationFrame(gameLoop);
 				
+				ticker.tick();
 				animate();
 				
 				if (lives <= 0) {
