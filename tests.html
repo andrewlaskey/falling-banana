@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+      <title>Tests</title>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+      <script src="game-objects.js"></script>
+      <script>
+        
+        $(function() {
+        // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+		// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+
+		// requestAnimationFrame polyfill by Erik M�ller
+		// fixes from Paul Irish and Tino Zijdel
+
+		(function() {
+			var lastTime = 0;
+			var vendors = ['ms', 'moz', 'webkit', 'o'];
+			for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+				window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+				window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
+										   || window[vendors[x]+'CancelRequestAnimationFrame'];
+			}
+		 
+			if (!window.requestAnimationFrame)
+				window.requestAnimationFrame = function(callback, element) {
+					var currTime = new Date().getTime();
+					var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+					var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+					  timeToCall);
+					lastTime = currTime + timeToCall;
+					return id;
+				};
+		 
+			if (!window.cancelAnimationFrame)
+				window.cancelAnimationFrame = function(id) {
+					clearTimeout(id);
+				};
+		}());
+		
+		//********************************************************
+        
+		var cvs = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+		
+		var newWorld = new gameWorld(6);
+		
+		newWorld.w = cvs.width;
+		newWorld.h = cvs.height;
+		
+		apple1 = new gameObject({
+			type: 'apple',
+			x: 150,
+			y: 10,
+			w: 10,
+			h: 18,
+			life: 1
+		});
+		
+		apple1.draw = drawApple;
+		apple1.update = fall;
+		
+		newWorld.addObject(apple1);
+		
+		b1 = new gameObject({
+			type: 'banana',
+			x: 300,
+			y: 10,
+			w: 10,
+			h: 18,
+			life: 1
+		});
+		
+		b1.draw = drawBanana;
+		b1.update = fall;
+		
+		newWorld.addObject(b1);
+		
+		function displayTest(output){
+			//Set the text font and color
+			ctx.fillStyle = 'rgb(255,255,255)';
+			ctx.font = "18px Helvetica, Ariel";
+			 
+			ctx.fillText(output,30,30);
+		}
+		
+		
+		
+		var loop;
+		var fps = 60;
+		function gameLoop() {
+			setTimeout(function() {
+				loop = window.requestAnimationFrame(gameLoop);
+				
+				newWorld.updateGameObjects();
+				newWorld.drawGame(ctx);
+				
+			}, 1000 / fps);
+		}
+		
+		gameLoop();
+        });
+    </script>
+  </head>
+  <body>    
+    <style type="text/css">
+      canvas {
+        border:1px solid black;
+		background: #197329;
+      }
+    </style>
+    <canvas id="canvas" width="600" height="400"> 
+      Your browser does not support the HTML5 Canvas feature. This game uses new HTML5 features and will only work on the latest versions of Firefox, Safari or Chrome (and maybe Internet Explorer 9).         
+    </canvas>   
+  </body>
+</html>
