@@ -4,6 +4,7 @@
       <meta http-equiv="Content-type" content="text/html; charset=utf-8">
       <title>Tests</title>
       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+      <script src="draw-functions.js"></script>
       <script src="game-objects.js"></script>
       <script>
         
@@ -77,12 +78,20 @@
 		
 		newWorld.addObject(b1);
 		
+		groundObj = new gameObject(ground(newWorld.w, newWorld.h));
+		
+		newWorld.addObject(groundObj);
+		
 		function displayTest(output){
 			//Set the text font and color
 			ctx.fillStyle = 'rgb(255,255,255)';
 			ctx.font = "18px Helvetica, Ariel";
 			 
-			ctx.fillText(output,30,30);
+			for(var i=0; i < newWorld.gameObjects.length; i++) {
+				ctx.fillText(newWorld.gameObjects[i].life,30,30+ i* 10);
+			
+			}
+			
 		}
 		
 		
@@ -95,6 +104,9 @@
 				
 				newWorld.updateGameObjects();
 				newWorld.drawGame(ctx);
+				newWorld.removeDeadObjects();
+				
+				displayTest('');
 				
 			}, 1000 / fps);
 		}

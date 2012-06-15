@@ -1,3 +1,41 @@
+//***************HELP FUNCTIONS*********************
+function calculateDistance(x1, y1, x2, y2){
+	x = Math.abs(x1 - x2);
+	y = Math.abs(y1 - y2);
+	
+	return Math.sqrt((x * x) + (y * y));
+}
+
+function collisionDetect(obj1, obj2){
+	var left1;
+	var right1;
+	var top1;
+	var bottom1;
+	
+	var left2;
+	var right2;
+	var top2;
+	var bottom2;
+	
+	left1 = obj1.x;
+	left2 = obj2.x;
+	right1 = obj1.x + obj1.w;
+	right2 = obj2.x + obj2.w;
+	top1 = obj1.y;
+	top2 = obj2.y;
+	bottom1 = obj1.y + obj1.h;
+	bottom2 = obj2.y + obj2.h;
+	
+	if (bottom1 < top2) return 0;
+	if (top1 > bottom2) return 0;
+	
+	if (right1 < left2) return 0;
+	if (left1 > right2) return 0;
+	
+	return 1;
+}
+//**************************************************
+
 function gameWorld (gravity) {
  	this.w = 0;
  	this.h = 0;
@@ -12,7 +50,25 @@ gameWorld.prototype.addObject = function(newGameObject) {
 
 gameWorld.prototype.updateGameObjects = function() {
 	for (var i = 0; i < this.gameObjects.length; i++) {
+		//move the object
 		this.gameObjects[i].update(this.gravity);
+		
+		//check if the object has hit any other objects
+		for (var l = 0; l < this.gameObjects.length; l++) {
+			if (l != i) {
+				if (collisionDetect(this.gameObjects[i], this.gameObjects[l])) {
+					this.gameObjects[i].life -= 1;
+				}
+			}
+		}
+	}
+}
+
+gameWorld.prototype.removeDeadObjects = function() {
+	for (var i = 0; i < this.gameObjects.length; i++) {
+		if (this.gameObjects[i].life <= 0) {
+			this.gameObjects.splice(i,1);
+		}
 	}
 }
 
@@ -22,7 +78,11 @@ gameWorld.prototype.drawGame = function(ctx) {
 	
 	//draw all the game objects
 	for (var i = 0; i < this.gameObjects.length; i++) {
-		this.gameObjects[i].draw(ctx,1);
+		if (this.gameObjects[i].life === 0) {
+			this.gameObjects[i].draw(ctx,0);
+		} else {
+			this.gameObjects[i].draw(ctx,1);
+		}
 	}
 }
 
@@ -38,59 +98,24 @@ function gameObject(options) {
 	this.damage = options.damage || 0;
 	this.points = options.points || 0;
 	this.update = function() { };
-	this.draw = function() { };	
-}
-
-var drawBanana = function(ctx, frame) {
-	ctx.fillStyle = 'rgb(255,255,51)';
-	switch(frame)
-	{
-		case 0:
-			ctx.fillRect(this.x,this.y+this.h*.6,this.w,this.h*.4);
-			break;
-		case 1:
-			ctx.beginPath();
-			ctx.moveTo(this.x, this.y);
-			ctx.lineTo(this.x, this.y + this.h/2);
-			ctx.lineTo(this.x + this.w, this.y + this.h);
-			ctx.lineTo(this.x + this.w*.4, this.y + this.h/2);
-			ctx.lineTo(this.x, this.y);
-			ctx.fill();
-			break;
-	};
-}
-
-var drawApple = function(ctx, frame) {
-	ctx.fillStyle = 'rgb(235,32,57)';
-	switch(frame)
-	{
-		case 0:
-			ctx.beginPath();
-			ctx.arc(this.x - this.w, this.y - this.w,this.w/2,0,Math.PI*2,true);
-			ctx.fill();
-			
-			ctx.beginPath();
-			ctx.arc(this.x - this.w, this.y + this.w,this.w/2,0,Math.PI*2,true);
-			ctx.fill();
-			
-			ctx.beginPath();
-			ctx.arc(this.x + this.w, this.y - this.w,this.w/2,0,Math.PI*2,true);
-			ctx.fill();
-			
-			ctx.beginPath();
-			ctx.arc(this.x + this.w, this.y + this.w,this.w/2,0,Math.PI*2,true);
-			ctx.fill();
-			break;
-		case 1:
-			ctx.fillStyle = 'rgb(235,32,57)';
-			ctx.beginPath();
-			ctx.arc(this.x, this.y,this.w,0,Math.PI*2,true);
-			ctx.fill();
-			break;
-	};
+	this.draw = options.draw || function() { };	
 }
 
 var fall = function(gravity) {
 	this.vY = gravity;
 	this.y += this.vY;
+}
+
+var ground = function(worldW, worldH, ctx) {
+	var options = {
+	type: 'ground',
+	x: 0,
+	y: worldH-25,
+	w: worldW,
+	h: 25,
+	life: 999,
+	draw: drawGround 
+	};
+	
+	return options;
 }
