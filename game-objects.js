@@ -54,10 +54,14 @@ gameWorld.prototype.updateGameObjects = function() {
 		this.gameObjects[i].update(this.gravity);
 		
 		//check if the object has hit any other objects
-		for (var l = 0; l < this.gameObjects.length; l++) {
-			if (l != i) {
-				if (collisionDetect(this.gameObjects[i], this.gameObjects[l])) {
-					this.gameObjects[i].life -= 1;
+		if (this.gameObjects[i].solid) {
+			for (var l = 0; l < this.gameObjects.length; l++) {
+				if (l != i) {
+					if (collisionDetect(this.gameObjects[i], this.gameObjects[l])) {
+						if (this.gameObjects[i].destructable) {
+							this.gameObjects[i].life -= 1;
+						}
+					}
 				}
 			}
 		}
@@ -97,25 +101,103 @@ function gameObject(options) {
 	this.life = options.life || 0;
 	this.damage = options.damage || 0;
 	this.points = options.points || 0;
-	this.update = function() { };
+	this.update = options.update || function() { };
 	this.draw = options.draw || function() { };	
 }
+//--------------------------------------------
 
+//----------DECORATORS AND SUCH---------------
 var fall = function(gravity) {
 	this.vY = gravity;
 	this.y += this.vY;
 }
 
-var ground = function(worldW, worldH, ctx) {
+function isSolid(gObj) {
+	var solidObj = gObj;
+	solidObj.solid = true;
+	return solidObj;
+}
+
+function isDestructable(gObj) {
+	var destObj = gObj;
+	destObj.destructable = true;
+	return destObj;
+}
+
+function doesDamage(gObj) {
+	var damageObj = gObj;
+	damageObj.giveDamage = true;
+	return damageObj;
+}
+
+function givesPoints(gObj) {
+	var pointsObj = gObj;
+	pointsObj.givePoint = true;
+	return pointsObj;
+}
+//-------------------------------------------
+
+//----------CONSTRUCTORS----------------
+var ground = function(worldW, worldH) {
 	var options = {
 	type: 'ground',
 	x: 0,
 	y: worldH-25,
 	w: worldW,
 	h: 25,
-	life: 999,
+	life: 1,
 	draw: drawGround 
 	};
 	
 	return options;
 }
+
+//makes a new banana
+var makeBanana = function() {
+	var banana = new gameObject({
+		type: 'banana',
+		x: 300,
+		y: 10,
+		w: 10,
+		h: 18,
+		life: 1,
+		update: fall,
+		draw: drawBanana
+	});
+	banana = isSolid(banana);
+	banana = isDestructable(banana);
+	return banana;
+}
+
+//makes a new apple
+var makeApple = function() {
+	var apple = new gameObject({
+		type: 'apple',
+		x: 150,
+		y: 10,
+		w: 10,
+		h: 18,
+		life: 1,
+		update: fall,
+		draw: drawApple
+	});
+	apple = isSolid(apple);
+	apple = isDestructable(apple);
+	return apple;
+}
+
+var makePlayer = function() {
+	var player = new gameObject({
+		type: 'player',
+		x: 200,
+		y: 337,
+		w: 21,
+		h: 38,
+		vX: 0,
+		vY: 0,
+		life: 5,
+		draw: drawCatcher
+	})
+	return player;
+}
+//---------------------------------------

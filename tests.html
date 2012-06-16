@@ -50,7 +50,7 @@
 		newWorld.w = cvs.width;
 		newWorld.h = cvs.height;
 		
-		apple1 = new gameObject({
+		/*apple1 = new gameObject({
 			type: 'apple',
 			x: 150,
 			y: 10,
@@ -60,11 +60,13 @@
 		});
 		
 		apple1.draw = drawApple;
-		apple1.update = fall;
+		apple1.update = fall;*/
+		
+		apple1 = makeApple();
 		
 		newWorld.addObject(apple1);
 		
-		b1 = new gameObject({
+		/*b1 = new gameObject({
 			type: 'banana',
 			x: 300,
 			y: 10,
@@ -73,24 +75,28 @@
 			life: 1
 		});
 		
-		b1.draw = drawBanana;
-		b1.update = fall;
+		//b1.draw = drawBanana;
+		//b1.update = fall;
+		//b1 = isSolid(b1);*/
+		
+		b1 = makeBanana();
 		
 		newWorld.addObject(b1);
 		
-		groundObj = new gameObject(ground(newWorld.w, newWorld.h));
+		floor = new gameObject(ground(newWorld.w, newWorld.h));
 		
-		newWorld.addObject(groundObj);
+		newWorld.addObject(floor);
+		
+		newWorld.addObject(makePlayer());
 		
 		function displayTest(output){
 			//Set the text font and color
 			ctx.fillStyle = 'rgb(255,255,255)';
 			ctx.font = "18px Helvetica, Ariel";
 			 
-			for(var i=0; i < newWorld.gameObjects.length; i++) {
-				ctx.fillText(newWorld.gameObjects[i].life,30,30+ i* 10);
+			ctx.fillText(output,30,30);
 			
-			}
+
 			
 		}
 		
@@ -106,7 +112,7 @@
 				newWorld.drawGame(ctx);
 				newWorld.removeDeadObjects();
 				
-				displayTest('');
+				displayTest(newWorld.gameObjects.length);
 				
 			}, 1000 / fps);
 		}
