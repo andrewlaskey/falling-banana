@@ -62,9 +62,9 @@
 		apple1.draw = drawApple;
 		apple1.update = fall;*/
 		
-		apple1 = makeApple();
+		/*apple1 = makeApple();
 		
-		newWorld.addObject(apple1);
+		newWorld.addObject(apple1);*/
 		
 		/*b1 = new gameObject({
 			type: 'banana',
@@ -79,13 +79,13 @@
 		//b1.update = fall;
 		//b1 = isSolid(b1);*/
 		
-		b1 = makeBanana();
+		/*b1 = makeBanana();
 		
-		newWorld.addObject(b1);
+		newWorld.addObject(b1);*/
 		
-		floor = new gameObject(ground(newWorld.w, newWorld.h));
+		//floor = new gameObject(ground(newWorld.w, newWorld.h));
 		
-		newWorld.addObject(floor);
+		newWorld.addObject(makeGround(newWorld.w, newWorld.h));
 		
 		newWorld.addObject(makePlayer());
 		
@@ -94,14 +94,28 @@
 			ctx.fillStyle = 'rgb(255,255,255)';
 			ctx.font = "18px Helvetica, Ariel";
 			 
-			ctx.fillText(output,30,30);
-			
+			for (var i=0; i < newWorld.gameObjects.length; i++)
+			{ 
+			ctx.fillText(newWorld.gameObjects[i].x + ',' + newWorld.gameObjects[i].y,30,30 + i * 12);
+			}
 
 			
 		}
 		
+		canopy = new gameObject({
+			x: 0,
+			y: 0,
+			w: newWorld.w,
+			h: 50,
+			life: 1,
+			draw: drawCanopy
+		});
+		
+		newWorld.addObject(canopy);
 		
 		function startGame() {
+		
+		
 		
 		gameLoop();
 		
@@ -131,8 +145,9 @@
 				newWorld.updateGameObjects();
 				newWorld.drawGame(ctx);
 				newWorld.removeDeadObjects();
+				newWorld.addNewObjects();
 				
-				displayTest(newWorld.keyPressed);
+				displayTest('');
 				
 			}, 1000 / fps);
 		}

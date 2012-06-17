@@ -6,34 +6,49 @@ var drawCatcher = function (ctx, frame) {
 		case 0:
 			front = 'rgb(51,29,8)';
 			back = 'rgb(24,15,4)';
+			drawCatcherTop(ctx,back,this.x,this.y,this.w, this.h);
+			drawCatcherLeftLeg(ctx,back,this.x,this.y,this.w, this.h);
+			drawCatcherRightLeg(ctx,front,this.x,this.y,this.w, this.h);
 			break;
-		case 2:
+		case 3:
 			front = 'rgb(212,176,140)';
 			back = 'rgb(176,126,76)';
+			drawCatcherTop(ctx,back,this.x,this.y,this.w, this.h);
+			drawCatcherLeftLeg(ctx,back,this.x,this.y,this.w, this.h);
+			drawCatcherRightLeg(ctx,front,this.x,this.y,this.w, this.h);
+			break;
+		case 2:
+			front = 'rgb(201,201,201)';
+			back = 'rgb(140,140,140)';
+			drawCatcherTop(ctx,front,this.x,this.y,this.w, this.h);
+			drawCatcherRightLeg(ctx,back,this.x,this.y,this.w, this.h);
+			drawCatcherLeftLeg(ctx,front,this.x,this.y,this.w, this.h);
 			break;
 		case 1:
-			front = 'rgb(176,126,76)';
-			back = 'rgb(133,91,53)';
+			front = 'rgb(201,201,201)';
+			back = 'rgb(140,140,140)';
+			drawCatcherTop(ctx,front,this.x,this.y,this.w, this.h);
+			drawCatcherLeftLeg(ctx,back,this.x,this.y,this.w, this.h);
+			drawCatcherRightLeg(ctx,front,this.x,this.y,this.w, this.h);
 			break;
 	}
+	
+}
 
-	//draw top
-	ctx.fillStyle = front;
+function drawCatcherTop(ctx, fillColor, x, y, w, h) {
+	ctx.fillStyle = fillColor;
 	ctx.beginPath();
-	ctx.moveTo(this.x,this.y);
-	ctx.lineTo(this.x,this.y + this.h*.5);
-	ctx.lineTo(this.x + this.w*.33, this.y + this.h*.5);
-	ctx.lineTo(this.x + this.w*.33, this.y + this.h*.33);
-	ctx.lineTo(this.x + this.w, this.y + this.h*.18);
-	ctx.lineTo(this.x + this.w*.3, this.y + this.h*.18);
-	ctx.lineTo(this.x + this.w*.3, this.y + this.h*.14);
-	ctx.lineTo(this.x + this.w*.33, this.y + this.h*.14);
-	ctx.lineTo(this.x + this.w*.33, this.y);
+	ctx.moveTo(x,y);
+	ctx.lineTo(x,y + h*.5);
+	ctx.lineTo(x + w*.33, y + h*.5);
+	ctx.lineTo(x + w*.33, y + h*.33);
+	ctx.lineTo(x + w, y + h*.18);
+	ctx.lineTo(x + w*.3, y + h*.18);
+	ctx.lineTo(x + w*.3, y + h*.14);
+	ctx.lineTo(x + w*.33, y + h*.14);
+	ctx.lineTo(x + w*.33, y);
 	ctx.closePath();
 	ctx.fill();
-	
-	drawCatcherLeftLeg(ctx,back,this.x,this.y,this.w, this.h);
-	drawCatcherRightLeg(ctx,front,this.x,this.y,this.w, this.h);
 }
 
 function drawCatcherLeftLeg(ctx,fillColor, x, y, w, h) {
@@ -114,4 +129,37 @@ var drawApple = function(ctx, frame) {
 var drawGround = function(ctx) {
 	ctx.fillStyle = 'rgb(79,62,25)';
 	ctx.fillRect(this.x,this.y,this.w,this.h);
+}
+
+var drawForrest = function(ctx,w,h){
+	//second canopy
+	ctx.fillStyle = 'rgba(31,103,41,0.8)';
+	ctx.fillRect(0,0,w,64);
+
+	//trees row 1
+	ctx.fillStyle = 'rgb(160,101,48)';
+	ctx.fillRect(100,0,52,h);
+	//branch
+	ctx.beginPath();
+	ctx.moveTo(100, 112);
+	ctx.lineTo(42, 0);
+	ctx.lineTo(54, 0);
+	ctx.lineTo(100, 92);
+	ctx.closePath();
+	ctx.fill();
+			
+	ctx.fillRect(212,0,46,h);
+	ctx.fillRect(322,0,32,h);
+	ctx.fillRect(470,0,52,h);
+
+	//row 2
+	ctx.fillStyle = 'rgba(160,101,48,0.5)';
+	ctx.fillRect(52,0,16,h);
+	ctx.fillRect(276,0,14,h);
+	ctx.fillRect(412,0,18,h);
+}
+
+var drawCanopy = function(ctx){
+	ctx.fillStyle = 'rgb(43,142,60)';
+	ctx.fillRect(this.x,this.y,this.x+this.w,this.y+this.h);
 }

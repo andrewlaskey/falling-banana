@@ -43,6 +43,7 @@ function gameWorld (gravity) {
 	this.score = 0;
  	this.gameObjects = [];
  	this.keyPressed = 'NONE';
+ 	this.background = drawForrest;
 }
 
 gameWorld.prototype.addObject = function(newGameObject) {
@@ -52,20 +53,36 @@ gameWorld.prototype.addObject = function(newGameObject) {
 gameWorld.prototype.updateGameObjects = function() {
 	for (var i = 0; i < this.gameObjects.length; i++) {
 		//move the object
-		this.gameObjects[i].update(this.gravity,this.keyPressed);
+		this.gameObjects[i].move(this.gravity,this.keyPressed);
 		
 		//check if the object has hit any other objects
 		if (this.gameObjects[i].solid) {
+		
 			for (var l = 0; l < this.gameObjects.length; l++) {
-				if (l != i) {
+			
+				if (l != i && this.gameObjects[l].solid) {
+				
 					if (collisionDetect(this.gameObjects[i], this.gameObjects[l])) {
-						if (this.gameObjects[i].destructable) {
+						
+						if (this.gameObjects[i].giveDamage && this.gameObjects[l].destructable) {
+							this.gameObjects[l].life -= this.gameObjects[i].damage;
+						}
+						
+						if (this.gameObjects[i].destructable && this.gameObjects[i].type != 'player') {
 							this.gameObjects[i].life -= 1;
+						}
+						
+						if (this.gameObjects[i].givePoint && this.gameObjects[l].type == 'player') {
+							this.score += this.gameObjects[i].points;
 						}
 					}
 				}
 			}
 		}
+		
+		//update its position
+		this.gameObjects[i].x += this.gameObjects[i].vX;
+		this.gameObjects[i].y += this.gameObjects[i].vY;
 	}
 }
 
@@ -81,14 +98,57 @@ gameWorld.prototype.drawGame = function(ctx) {
 	//clear the screen
 	ctx.clearRect(0,0,this.w,this.h);
 	
+	//draw backgound
+	this.background(ctx,this.w,this.h);
+	
 	//draw all the game objects
 	for (var i = 0; i < this.gameObjects.length; i++) {
+		//draw player life
+		if(this.gameObjects[i].type === 'player') {
+			ctx.fillStyle = 'rgb(220,220,220)';
+			ctx.font = '18px Helvetica, Ariel';
+			ctx.fillText(this.gameObjects[i].life,this.w - 10,this.h-5);
+		}
+		//draw other object stuff
 		if (this.gameObjects[i].life === 0) {
 			this.gameObjects[i].draw(ctx,0);
 		} else {
-			this.gameObjects[i].draw(ctx,1);
+			if (this.gameObjects[i].animate) {
+			 	this.gameObjects[i].tick += 1;
+			 	if (this.gameObjects[i].tick == 8) {
+			 		this.gameObjects[i].tick = 0;
+			 		this.gameObjects[i].frame += 1;
+			 		if (this.gameObjects[i].frame > this.gameObjects[i].maxFrame) {
+			 			this.gameObjects[i].frame = this.gameObjects[i].minFrame;
+			 		}
+			 	}
+			 	this.gameObjects[i].draw(ctx, this.gameObjects[i].frame);
+			} else {
+				this.gameObjects[i].draw(ctx,1);
+			}
 		}
 	}
+	
+	//draw score
+	ctx.fillStyle = 'rgb(220,220,220)';
+	ctx.font = '18px Helvetica, Ariel';
+	ctx.fillText(this.score,10,this.h - 5);
+}
+
+gameWorld.prototype.addNewObjects = function() {
+	var bananaProb = 5;
+	var appleProb = 1;
+	
+	var prob = Math.random() * 100;
+	
+	if (prob < bananaProb) {
+		this.addObject(makeBanana(this.w));
+	}
+	
+	if (prob < appleProb) {
+		this.addObject(makeApple(this.w));
+	}
+	
 }
 
 function gameObject(options) {
@@ -102,16 +162,14 @@ function gameObject(options) {
 	this.life = options.life || 0;
 	this.damage = options.damage || 0;
 	this.points = options.points || 0;
-	this.update = options.update || function() { };
+	this.move = options.move || function() { };
 	this.draw = options.draw || function() { };	
 }
-
 //--------------------------------------------
 
 //----------DECORATORS AND SUCH---------------
 var fall = function(gravity) {
 	this.vY = gravity;
-	this.y += this.vY;
 }
 
 function isSolid(gObj) {
@@ -140,27 +198,41 @@ function givesPoints(gObj) {
 
 function userControlled(gObj) {
 	var userObj = gObj;
-	userObj.update = function(gravity, keyPressed) {
+	userObj.move = function(gravity, keyPressed) {
 		var speed = 5;
 		switch(keyPressed) {
 			case 'RIGHT':
 				this.vX = speed;
+				this.animate = true;
 				break;
 			case 'LEFT':
 				this.vX = speed * -1;
+				this.animate = true;
 				break;
 			case 'NONE':
 				this.vX = 0;
+				this.animate = false;
+				break;
 		}
-		this.x += this.vX;
 	};
 	return userObj;
 }
+
+function isAnimated(gObj, lastFrame, firstFrame) {
+	var animatedObj = gObj;
+	animatedObj.animate = true;
+	animatedObj.frame = 1;
+	animatedObj.tick = 0;
+	animatedObj.maxFrame = lastFrame;
+	animatedObj.minFrame = firstFrame;
+	return animatedObj;
+}
+	
 //-------------------------------------------
 
 //----------CONSTRUCTORS----------------
-var ground = function(worldW, worldH) {
-	var options = {
+var makeGround = function(worldW, worldH) {
+	var ground = new gameObject({
 	type: 'ground',
 	x: 0,
 	y: worldH-25,
@@ -168,41 +240,45 @@ var ground = function(worldW, worldH) {
 	h: 25,
 	life: 1,
 	draw: drawGround 
-	};
-	
-	return options;
+	});
+	ground = isSolid(ground);
+	return ground;
 }
 
 //makes a new banana
-var makeBanana = function() {
+var makeBanana = function(w) {
 	var banana = new gameObject({
 		type: 'banana',
-		x: 300,
-		y: 10,
+		x: Math.random() * w,
+		y: 0,
 		w: 10,
 		h: 18,
 		life: 1,
-		update: fall,
+		points: 1,
+		move: fall,
 		draw: drawBanana
 	});
 	banana = isSolid(banana);
 	banana = isDestructable(banana);
+	banana = givesPoints(banana);
 	return banana;
 }
 
 //makes a new apple
-var makeApple = function() {
+var makeApple = function(w) {
 	var apple = new gameObject({
 		type: 'apple',
-		x: 150,
-		y: 10,
+		x: Math.random() * w,
+		y: 0,
 		w: 10,
 		h: 18,
 		life: 1,
-		update: fall,
+		damage: 1,
+		move: fall,
 		draw: drawApple
 	});
 	apple = isSolid(apple);
+	apple = doesDamage(apple);
 	apple = isDestructable(apple);
 	return apple;
 }
@@ -211,15 +287,19 @@ var makePlayer = function() {
 	var player = new gameObject({
 		type: 'player',
 		x: 200,
-		y: 337,
+		y: 336,
 		w: 21,
 		h: 38,
 		vX: 0,
 		vY: 0,
+		damage: 5,
 		life: 5,
 		draw: drawCatcher
 	})
+	player = isSolid(player);
+	player = isDestructable(player);
 	player = userControlled(player);
+	player = isAnimated(player,2,1);
 	return player;
 }
 //---------------------------------------
