@@ -42,6 +42,7 @@ function gameWorld (gravity) {
  	this.gravity = gravity || 7;
 	this.score = 0;
  	this.gameObjects = [];
+ 	this.keyPressed = 'NONE';
 }
 
 gameWorld.prototype.addObject = function(newGameObject) {
@@ -51,7 +52,7 @@ gameWorld.prototype.addObject = function(newGameObject) {
 gameWorld.prototype.updateGameObjects = function() {
 	for (var i = 0; i < this.gameObjects.length; i++) {
 		//move the object
-		this.gameObjects[i].update(this.gravity);
+		this.gameObjects[i].update(this.gravity,this.keyPressed);
 		
 		//check if the object has hit any other objects
 		if (this.gameObjects[i].solid) {
@@ -104,6 +105,7 @@ function gameObject(options) {
 	this.update = options.update || function() { };
 	this.draw = options.draw || function() { };	
 }
+
 //--------------------------------------------
 
 //----------DECORATORS AND SUCH---------------
@@ -134,6 +136,25 @@ function givesPoints(gObj) {
 	var pointsObj = gObj;
 	pointsObj.givePoint = true;
 	return pointsObj;
+}
+
+function userControlled(gObj) {
+	var userObj = gObj;
+	userObj.update = function(gravity, keyPressed) {
+		var speed = 5;
+		switch(keyPressed) {
+			case 'RIGHT':
+				this.vX = speed;
+				break;
+			case 'LEFT':
+				this.vX = speed * -1;
+				break;
+			case 'NONE':
+				this.vX = 0;
+		}
+		this.x += this.vX;
+	};
+	return userObj;
 }
 //-------------------------------------------
 
@@ -198,6 +219,7 @@ var makePlayer = function() {
 		life: 5,
 		draw: drawCatcher
 	})
+	player = userControlled(player);
 	return player;
 }
 //---------------------------------------

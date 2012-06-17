@@ -3,7 +3,7 @@
   <head>
       <meta http-equiv="Content-type" content="text/html; charset=utf-8">
       <title>Tests</title>
-      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+      <script src="jquery-1.3.2.min.js"></script>
       <script src="draw-functions.js"></script>
       <script src="game-objects.js"></script>
       <script>
@@ -101,6 +101,26 @@
 		}
 		
 		
+		function startGame() {
+		
+		gameLoop();
+		
+		$(document).keydown(function(evt) {
+				if (evt.keyCode == 39) {
+					newWorld.keyPressed = 'RIGHT';
+				} else if (evt.keyCode == 37){
+					newWorld.keyPressed = 'LEFT';
+				}
+			});         
+
+			$(document).keyup(function(evt) {
+				if (evt.keyCode == 39) {
+					newWorld.keyPressed = 'NONE';
+				} else if (evt.keyCode == 37){
+					newWorld.keyPressed = 'NONE';
+				}
+			}); 
+		}
 		
 		var loop;
 		var fps = 60;
@@ -112,12 +132,12 @@
 				newWorld.drawGame(ctx);
 				newWorld.removeDeadObjects();
 				
-				displayTest(newWorld.gameObjects.length);
+				displayTest(newWorld.keyPressed);
 				
 			}, 1000 / fps);
 		}
 		
-		gameLoop();
+		startGame();
         });
     </script>
   </head>
