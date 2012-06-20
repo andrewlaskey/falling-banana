@@ -246,10 +246,10 @@ var makeGround = function(worldW, worldH) {
 }
 
 //makes a new banana
-var makeBanana = function(w) {
+var makeBanana = function(worldW) {
 	var banana = new gameObject({
 		type: 'banana',
-		x: Math.random() * w,
+		x: Math.random() * worldW,
 		y: 0,
 		w: 10,
 		h: 18,
@@ -265,10 +265,10 @@ var makeBanana = function(w) {
 }
 
 //makes a new apple
-var makeApple = function(w) {
+var makeApple = function(worldW) {
 	var apple = new gameObject({
 		type: 'apple',
-		x: Math.random() * w,
+		x: Math.random() * worldW,
 		y: 0,
 		w: 10,
 		h: 18,
@@ -301,5 +301,17 @@ var makePlayer = function() {
 	player = userControlled(player);
 	player = isAnimated(player,2,1);
 	return player;
+}
+
+var makeCanopy = function(worldW) {
+	var canopy = new gameObject({
+			x: 0,
+			y: 0,
+			w: worldW,
+			h: 50,
+			life: 1,
+			draw: drawCanopy
+		});
+	return canopy;
 }
 //---------------------------------------
