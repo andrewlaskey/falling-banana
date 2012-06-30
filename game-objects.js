@@ -340,4 +340,19 @@ var makeCanopy = function(worldW) {
 		});
 	return canopy;
 }
+
+var makeWall = function(worldW, worldH, rightWall) {
+	var wall = new gameObject({
+		x:0,
+		y:0,
+		w:0,
+		h: worldH,
+		life:1
+	});
+	if (rightWall) {
+		wall.x = worldW;
+	}
+	wall = isSolid(wall);
+	return wall;
+}
 //---------------------------------------

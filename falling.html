@@ -55,6 +55,8 @@
 		//init the game
 		gWorld.addObject(makeGround(gWorld.w, gWorld.h));
 		gWorld.addObject(makeCanopy(gWorld.w));
+		gWorld.addObject(makeWall(gWorld.w, gWorld.h));
+		gWorld.addObject(makeWall(gWorld.w, gWorld.h,true));
 		gWorld.addObject(makePlayer());
 		
 		$(document).keydown(function(evt) {
