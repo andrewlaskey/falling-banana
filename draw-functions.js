@@ -161,5 +161,5 @@ var drawForrest = function(ctx,w,h){
 
 var drawCanopy = function(ctx){
 	ctx.fillStyle = 'rgb(43,142,60)';
-	ctx.fillRect(this.x,this.y,this.x+this.w,this.y+this.h);
+	ctx.fillRect(this.x,this.y,this.w,this.h);
 }

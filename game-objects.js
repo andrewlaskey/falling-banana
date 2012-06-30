@@ -82,8 +82,13 @@ gameWorld.prototype.updateGameObjects = function() {
 							this.score += this.gameObjects[i].points;
 						}
 						
-						if (this.gameObjects[l].bounce) {
-							this.gameObjects[i].x = this.gameObjects[l].x - this.gameObjects[l].w;
+						if (this.gameObjects[i].type == 'player') {
+							if (this.gameObjects[i].vX > 0) {
+								this.gameObjects[i].x = this.gameObjects[l].x - this.gameObjects[i].w;
+							}
+							if (this.gameObjects[i].vX < 0) {
+								this.gameObjects[i].x = this.gameObjects[l].x + this.gameObjects[l].w;
+							}
 						}
 					}
 				}
@@ -206,11 +211,6 @@ function givesPoints(gObj) {
 	return pointsObj;
 }
 
-function doesBounce(gObj) {
-	var bounceObj = gObj;
-	bounceObj.bounce = true;
-	return bounceObj;
-}
 
 function userControlled(gObj) {
 	var userObj = gObj;
