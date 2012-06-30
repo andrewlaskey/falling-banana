@@ -94,8 +94,12 @@
 			ctx.fillStyle = 'rgb(255,255,255)';
 			ctx.font = "18px Helvetica, Ariel";
 			 
-
-			ctx.fillText(output,30,30);
+			for (var i = 0; i < newWorld.gameObjects.length; i++) {
+				if (newWorld.gameObjects[i].type == "player"){
+					ctx.fillText(newWorld.gameObjects[i].x + ',' + newWorld.gameObjects[i].y ,30,30);
+				}
+			}
+			
 
 		}
 		
@@ -135,6 +139,9 @@
 				} else if (evt.keyCode == 37){
 					newWorld.keyPressed.left = true;
 				}
+				else if (evt.keyCode == 38){
+					newWorld.keyPressed.up = true;
+				}
 			});       
 
 			$(document).keyup(function(evt) {
@@ -142,6 +149,8 @@
 					newWorld.keyPressed.right = false;
 				} else if (evt.keyCode == 37){
 					newWorld.keyPressed.left = false;
+				} else if (evt.keyCode == 38){
+					newWorld.keyPressed.up = false;
 				}
 			}); 
 		}

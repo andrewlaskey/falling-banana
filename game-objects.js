@@ -43,7 +43,7 @@ function gameWorld (gravity) {
  	this.gravity = gravity || 7;
 	this.score = 0;
  	this.gameObjects = [];
- 	this.keyPressed = { right:false, left:false };
+ 	this.keyPressed = { right:false, left:false, up:false };
  	this.background = drawForrest;
 }
 
@@ -83,12 +83,15 @@ gameWorld.prototype.updateGameObjects = function() {
 						}
 						
 						if (this.gameObjects[i].type == 'player') {
+							//this could be a lot better in terms of determining collision response
+							//right now it stops the player when running in to solid objects
 							if (this.gameObjects[i].vX > 0) {
 								this.gameObjects[i].x = this.gameObjects[l].x - this.gameObjects[i].w;
 							}
 							if (this.gameObjects[i].vX < 0) {
 								this.gameObjects[i].x = this.gameObjects[l].x + this.gameObjects[l].w;
 							}
+
 						}
 					}
 				}
@@ -214,32 +217,29 @@ function givesPoints(gObj) {
 
 function userControlled(gObj) {
 	var userObj = gObj;
+	userObj.jump = false;
 	userObj.move = function(gravity, keyPressed) {
 		var speed = 5;
-		/*switch(keyPressed) {
-			case 'RIGHT':
-				this.vX = speed;
-				this.animate = true;
-				break;
-			case 'LEFT':
-				this.vX = speed * -1;
-				this.animate = true;
-				break;
-			case 'NONE':
-				this.vX = 0;
-				this.animate = false;
-				break;
-		}*/
+
 		this.vX = 0;
 		this.animate = false;
 		if (keyPressed.right) {
-			this.vX = speed;
+			this.vX += speed;
 			this.animate = true;
 		}
 		if (keyPressed.left) {
-			this.vX = speed * -1;
+			this.vX += speed * -1;
 			this.animate = true;
 		}
+		
+		/*gravity and jump testing
+		if (this.jump == true) {
+			this.vY = gravity*.5;
+		}
+		if (keyPressed.up && this.jump == false) {
+			this.vY -= 60;
+			this.jump = true;
+		}*/
 	};
 	return userObj;
 }
