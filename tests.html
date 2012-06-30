@@ -94,12 +94,9 @@
 			ctx.fillStyle = 'rgb(255,255,255)';
 			ctx.font = "18px Helvetica, Ariel";
 			 
-			for (var i=0; i < newWorld.gameObjects.length; i++)
-			{ 
-			ctx.fillText(newWorld.gameObjects[i].x + ',' + newWorld.gameObjects[i].y,30,30 + i * 12);
-			}
 
-			
+			ctx.fillText(output,30,30);
+
 		}
 		
 		canopy = new gameObject({
@@ -113,6 +110,8 @@
 		
 		newWorld.addObject(canopy);
 		
+
+		
 		function startGame() {
 		
 		
@@ -121,17 +120,17 @@
 		
 		$(document).keydown(function(evt) {
 				if (evt.keyCode == 39) {
-					newWorld.keyPressed = 'RIGHT';
+					newWorld.keyPressed.right = true;
 				} else if (evt.keyCode == 37){
-					newWorld.keyPressed = 'LEFT';
+					newWorld.keyPressed.left = true;
 				}
-			});         
+			});       
 
 			$(document).keyup(function(evt) {
 				if (evt.keyCode == 39) {
-					newWorld.keyPressed = 'NONE';
+					newWorld.keyPressed.right = false;
 				} else if (evt.keyCode == 37){
-					newWorld.keyPressed = 'NONE';
+					newWorld.keyPressed.left = false;
 				}
 			}); 
 		}
@@ -147,7 +146,7 @@
 				newWorld.removeDeadObjects();
 				newWorld.addNewObjects();
 				
-				displayTest('');
+				displayTest(newWorld.keyPressed.right);
 				
 			}, 1000 / fps);
 		}

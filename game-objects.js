@@ -36,13 +36,14 @@ function collisionDetect(obj1, obj2){
 }
 //**************************************************
 
+    
 function gameWorld (gravity) {
  	this.w = 0;
  	this.h = 0;
  	this.gravity = gravity || 7;
 	this.score = 0;
  	this.gameObjects = [];
- 	this.keyPressed = 'NONE';
+ 	this.keyPressed = { right:false, left:false };
  	this.background = drawForrest;
 }
 
@@ -54,6 +55,10 @@ gameWorld.prototype.updateGameObjects = function() {
 	for (var i = 0; i < this.gameObjects.length; i++) {
 		//move the object
 		this.gameObjects[i].move(this.gravity,this.keyPressed);
+		
+		//update its position
+		this.gameObjects[i].x += this.gameObjects[i].vX;
+		this.gameObjects[i].y += this.gameObjects[i].vY;
 		
 		//check if the object has hit any other objects
 		if (this.gameObjects[i].solid) {
@@ -70,6 +75,7 @@ gameWorld.prototype.updateGameObjects = function() {
 						
 						if (this.gameObjects[i].destructable && this.gameObjects[i].type != 'player') {
 							this.gameObjects[i].life -= 1;
+							
 						}
 						
 						if (this.gameObjects[i].givePoint && this.gameObjects[l].type == 'player') {
@@ -80,9 +86,7 @@ gameWorld.prototype.updateGameObjects = function() {
 			}
 		}
 		
-		//update its position
-		this.gameObjects[i].x += this.gameObjects[i].vX;
-		this.gameObjects[i].y += this.gameObjects[i].vY;
+		
 	}
 }
 
@@ -200,7 +204,7 @@ function userControlled(gObj) {
 	var userObj = gObj;
 	userObj.move = function(gravity, keyPressed) {
 		var speed = 5;
-		switch(keyPressed) {
+		/*switch(keyPressed) {
 			case 'RIGHT':
 				this.vX = speed;
 				this.animate = true;
@@ -213,6 +217,16 @@ function userControlled(gObj) {
 				this.vX = 0;
 				this.animate = false;
 				break;
+		}*/
+		this.vX = 0;
+		this.animate = false;
+		if (keyPressed.right) {
+			this.vX = speed;
+			this.animate = true;
+		}
+		if (keyPressed.left) {
+			this.vX = speed * -1;
+			this.animate = true;
 		}
 	};
 	return userObj;
