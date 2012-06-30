@@ -81,10 +81,16 @@ gameWorld.prototype.updateGameObjects = function() {
 						if (this.gameObjects[i].givePoint && this.gameObjects[l].type == 'player') {
 							this.score += this.gameObjects[i].points;
 						}
+						
+						if (this.gameObjects[l].bounce) {
+							this.gameObjects[i].x = this.gameObjects[l].x - this.gameObjects[l].w;
+						}
 					}
 				}
 			}
-		}
+		}//if solid
+		
+		
 		
 		
 	}
@@ -198,6 +204,12 @@ function givesPoints(gObj) {
 	var pointsObj = gObj;
 	pointsObj.givePoint = true;
 	return pointsObj;
+}
+
+function doesBounce(gObj) {
+	var bounceObj = gObj;
+	bounceObj.bounce = true;
+	return bounceObj;
 }
 
 function userControlled(gObj) {
