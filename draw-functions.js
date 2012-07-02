@@ -163,3 +163,49 @@ var drawCanopy = function(ctx){
 	ctx.fillStyle = 'rgb(43,142,60)';
 	ctx.fillRect(this.x,this.y,this.w,this.h);
 }
+
+function drawWalker(ctx, x, y, w, h){
+	
+	
+	//draw back legs
+	ctx.fillStyle = 'rgb(8,79,150)';
+	ctx.beginPath();
+	ctx.moveTo(x + w*.1, y + h*.4);
+	ctx.lineTo(x + w*.3, y + h*.6);
+	ctx.lineTo(x + w*.3, y + h);	//rear first foot
+	ctx.lineTo(x + w*.4, y + h*.6);
+	ctx.lineTo(x + w*.5, y + h*.4);
+	ctx.closePath();
+	ctx.fill();
+	
+	ctx.beginPath();
+	ctx.moveTo(x + w*.5, y + h*.4);
+	ctx.lineTo(x + w*.9, y + h*.75);
+	ctx.lineTo(x + w, y +h);		//rear second foot
+	ctx.lineTo(x + w, y + h*.75);
+	ctx.lineTo(x + w*.8, y + h*.4);
+	ctx.closePath();
+	ctx.fill();
+	
+	//draw front legs
+	ctx.fillStyle = 'rgb(49,147,245)';
+	ctx.beginPath();
+	ctx.moveTo(x,y + h*.2);			//back of hip
+	ctx.lineTo(x + w*.1,y + h*.15);
+	ctx.lineTo(x + w*.1, y + h*.4);	//to first leg
+	ctx.lineTo(x, y + h*.6);
+	ctx.lineTo(x, y + h);			//first foot
+	ctx.lineTo(x + w*.1, y + h*.6);	//back of first knee
+	ctx.lineTo(x + w*.5, y + h*.45);
+	//second leg
+	ctx.lineTo(x + w*.7, y + h*.75);
+	ctx.lineTo(x + w*.7, y + h);	//second foot
+	ctx.lineTo(x + w*.8, y + h*.75);
+	ctx.lineTo(x + w*.8, y + h*.3);	//back of hip
+	ctx.lineTo(x + w*.5, y + h*.2);
+	ctx.lineTo(x + w*.4, y + h*.1);
+	ctx.lineTo(x + w*.2, y);
+	ctx.lineTo(x + w*.1, y + h*.1);
+	ctx.closePath();
+	ctx.fill();
+}

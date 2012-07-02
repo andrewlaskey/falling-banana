@@ -155,6 +155,8 @@
 			}); 
 		}
 		
+		
+		
 		var loop;
 		var fps = 60;
 		function gameLoop() {
@@ -167,6 +169,7 @@
 				newWorld.addNewObjects();
 				
 				displayTest(newWorld.keyPressed.right);
+				drawWalker(ctx,350,100,120,200);
 				
 			}, 1000 / fps);
 		}
