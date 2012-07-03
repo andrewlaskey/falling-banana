@@ -93,6 +93,15 @@ gameWorld.prototype.updateGameObjects = function() {
 							}
 
 						}
+						
+						if (this.gameObjects[i].type == 'walker' && this.gameObjects[l].type == 'player') {
+							if (this.gameObjects[i].vX > 0) {
+								this.gameObjects[l].x = this.gameObjects[i].x + this.gameObjects[i].w;
+							}
+							if (this.gameObjects[i].vX < 0) {
+								this.gameObjects[l].x = this.gameObjects[i].x - this.gameObjects[l].w;
+							}
+						}
 					}
 				}
 			}
@@ -393,6 +402,7 @@ var makeCanopy = function(worldW) {
 
 var makeWalker = function(worldW, worldH, rightWall) {
 	var walker = new gameObject({
+		type: 'walker',
 		x:0,
 		y:150,
 		w:130,
@@ -400,6 +410,9 @@ var makeWalker = function(worldW, worldH, rightWall) {
 		life:1,
 		draw: drawWalker
 	});
+	
+	
+	//set up move behavior vars
 	walker.startWalker = false;
 	walker.maxX = 0;
 	walker.mode = 'ADVANCE';
@@ -413,6 +426,36 @@ var makeWalker = function(worldW, worldH, rightWall) {
 	}
 	walker.startX = walker.x;
 	walker.move = walkerMove;
+	
+	//set up legs
+	walker.r1 = {
+		mod: 0,
+		dir: 'ADD',
+		max: walker.w*.3,
+		min: 0
+	}
+	
+	walker.r2 = {
+		mod: 0,
+		dir: 'ADD',
+		max: walker.w - walker.w*.7,
+		min: 0
+	}
+	
+	walker.l1 = {
+		mod: walker.w*.3,
+		dir: 'SUB',
+		max: walker.w*.3,
+		min: 0
+	}
+	
+	walker.l2 = {
+		mod: walker.w - walker.w*.7,
+		dir: 'SUB',
+		max: walker.w - walker.w*.7,
+		min: 0
+	}
+	//make it something
 	walker = isSolid(walker);
 	return walker;
 }

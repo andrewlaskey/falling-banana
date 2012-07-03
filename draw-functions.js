@@ -171,18 +171,18 @@ var drawWalker = function(ctx){
 	ctx.fillStyle = 'rgb(8,79,150)';
 	ctx.beginPath();
 	ctx.moveTo(this.x + this.w*.1, this.y + this.h*.4);
-	ctx.lineTo(this.x + this.w*.3, this.y + this.h*.6);
-	ctx.lineTo(this.x + this.w*.3, this.y + this.h);	//rear first foot
-	ctx.lineTo(this.x + this.w*.4, this.y + this.h*.6);
+	ctx.lineTo(this.x + this.l2.mod, this.y + this.h*.6);
+	ctx.lineTo(this.x + this.l2.mod, this.y + this.h);	//rear first foot
+	ctx.lineTo(this.x + + this.w*.1 + this.l2.mod, this.y + this.h*.6);
 	ctx.lineTo(this.x + this.w*.5, this.y + this.h*.4);
 	ctx.closePath();
 	ctx.fill();
 	
 	ctx.beginPath();
 	ctx.moveTo(this.x + this.w*.5, this.y + this.h*.4);
-	ctx.lineTo(this.x + this.w*.9, this.y + this.h*.75);
-	ctx.lineTo(this.x + this.w, this.y + this.h);		//rear second foot
-	ctx.lineTo(this.x + this.w, this.y + this.h*.75);
+	ctx.lineTo(this.x + this.w*.7 + this.l2.mod, this.y + this.h*.75);
+	ctx.lineTo(this.x + this.w*.7 + this.l2.mod, this.y + this.h);		//rear second foot
+	ctx.lineTo(this.x + this.w*.8 + this.l2.mod, this.y + this.h*.75);
 	ctx.lineTo(this.x + this.w*.8, this.y + this.h*.4);
 	ctx.closePath();
 	ctx.fill();
@@ -193,15 +193,15 @@ var drawWalker = function(ctx){
 	ctx.moveTo(this.x, this.y + this.h*.2);	
 	ctx.lineTo(this.x + this.w*.1, this.y + this.h*.15);
 	ctx.lineTo(this.x + this.w*.1, this.y + this.h*.4);	//to first leg
-	ctx.lineTo(this.x, this.y + this.h*.6);
-	ctx.lineTo(this.x, this.y + this.h);			//first foot
-	ctx.lineTo(this.x + this.w*.1, this.y + this.h*.6);	//back of first knee
+	ctx.lineTo(this.x + this.r1.mod, this.y + this.h*.6);
+	ctx.lineTo(this.x + this.r1.mod, this.y + this.h);			//first foot
+	ctx.lineTo(this.x + this.w*.1 + this.r1.mod, this.y + this.h*.6);	//back of first knee
 	ctx.lineTo(this.x + this.w*.5, this.y + this.h*.45);
 	
 	//second leg
-	ctx.lineTo(this.x + this.w*.7, this.y + this.h*.75);
-	ctx.lineTo(this.x + this.w*.7, this.y + this.h);	//second foot
-	ctx.lineTo(this.x + this.w*.8, this.y + this.h*.75);
+	ctx.lineTo(this.x + this.w*.7 + this.r2.mod, this.y + this.h*.75);
+	ctx.lineTo(this.x + this.w*.7 + this.r2.mod, this.y + this.h);	//second foot
+	ctx.lineTo(this.x + this.w*.8 + this.r2.mod, this.y + this.h*.75);
 	
 	//back
 	ctx.lineTo(this.x + this.w*.8, this.y + this.h*.3);	//back of hip
@@ -211,4 +211,37 @@ var drawWalker = function(ctx){
 	ctx.lineTo(this.x + this.w*.1, this.y + this.h*.1);
 	ctx.closePath();
 	ctx.fill();
+	
+	//animate legs
+	if (this.r1.dir == 'ADD') {
+		this.r1.mod += .5;
+		if (this.r1.mod >= this.r1.max) {this.r1.dir = 'SUB';}
+	} else {
+		this.r1.mod -= .5;
+		if (this.r1.mod <= this.r1.min) {this.r1.dir = 'ADD';}
+	}
+	
+	if (this.r2.dir == 'ADD') {
+		this.r2.mod += .5;
+		if (this.r2.mod >= this.r2.max) {this.r2.dir = 'SUB';}
+	} else {
+		this.r2.mod -= .5;
+		if (this.r2.mod <= this.r2.min) {this.r2.dir = 'ADD';}
+	}
+	
+	if (this.l1.dir == 'ADD') {
+		this.l1.mod += .5;
+		if (this.l1.mod >= this.l1.max) {this.l1.dir = 'SUB';}
+	} else {
+		this.l1.mod -= .5;
+		if (this.l1.mod <= this.l1.min) {this.l1.dir = 'ADD';}
+	}
+	
+	if (this.l2.dir == 'ADD') {
+		this.l2.mod += .5;
+		if (this.l2.mod >= this.l2.max) {this.l2.dir = 'SUB';}
+	} else {
+		this.l2.mod -= .5;
+		if (this.l2.mod <= this.l2.min) {this.l2.dir = 'ADD';}
+	}
 }
