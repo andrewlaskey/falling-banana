@@ -253,6 +253,56 @@ function isAnimated(gObj, lastFrame, firstFrame) {
 	animatedObj.minFrame = firstFrame;
 	return animatedObj;
 }
+
+var walkerMove = function(gravity) {
+	var speed = .5;
+	if (this.startWalker) {
+		if (this.startSide == 'LEFT') {
+			if (this.mode == 'ADVANCE') {
+				this.vX = speed;
+				if (this.x + this.vX >= this.maxX) {
+					this.mode = 'RETREAT';
+				}
+			}//end LEFT ADVANCE
+			
+			if (this.mode == 'RETREAT') {
+				this.vX = speed * -1;
+				if (this.x + this.vX <= this.startX) {
+					this.startWalker = false;
+				}
+			}//end LEFT RETREAT
+		}//end LEFT
+		
+		if (this.startSide == 'RIGHT') {
+			if (this.mode == 'ADVANCE') {
+				this.vX = speed * -1;
+				if (this.x + this.vX <= this.maxX) {
+					this.mode = 'RETREAT';
+				}
+			}//end RIGHT ADVANCE
+			
+			if (this.mode == 'RETREAT') {
+				this.vX = speed;
+				if (this.x + this.vX >= this.startX) {
+					this.startWalker = false;
+					
+				}
+			}//end RIGHT RETREAT
+		}//end RIGHT
+
+	} else {
+		this.vX = 0;
+		var moveProb = Math.random() * 100;
+		
+		if (moveProb < 1) {
+			this.startWalker = true;
+			this.mode = 'ADVANCE';
+			dist = Math.random() * 250;
+			if (this.startSide == 'LEFT') {this.maxX = this.x + dist;}
+			if (this.startSide == 'RIGHT') {this.maxX = this.x - dist;}
+		}	
+	}	
+}
 	
 //-------------------------------------------
 
@@ -341,18 +391,29 @@ var makeCanopy = function(worldW) {
 	return canopy;
 }
 
-var makeWall = function(worldW, worldH, rightWall) {
-	var wall = new gameObject({
+var makeWalker = function(worldW, worldH, rightWall) {
+	var walker = new gameObject({
 		x:0,
-		y:0,
-		w:0,
-		h: worldH,
-		life:1
+		y:150,
+		w:130,
+		h: 225,
+		life:1,
+		draw: drawWalker
 	});
+	walker.startWalker = false;
+	walker.maxX = 0;
+	walker.mode = 'ADVANCE';
+	walker.startSide = 'LEFT';
+	
 	if (rightWall) {
-		wall.x = worldW;
+		walker.x = worldW;
+		walker.startSide = 'RIGHT';
+	} else {
+		walker.x = 0 - walker.w;
 	}
-	wall = isSolid(wall);
-	return wall;
+	walker.startX = walker.x;
+	walker.move = walkerMove;
+	walker = isSolid(walker);
+	return walker;
 }
 //---------------------------------------
