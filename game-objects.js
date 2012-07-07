@@ -163,15 +163,31 @@ gameWorld.prototype.drawGame = function(ctx) {
 }
 
 gameWorld.prototype.addNewObjects = function() {
-	var bananaProb = 5;
-	var appleProb = 1;
+	var bananaProb = 50;
+	var appleProb = 10;
+	var superBanProb = 200;
 	
-	var prob = Math.random() * 100;
-	
+	//calc for banana prob
+	var prob = Math.random() * 1000;
 	if (prob < bananaProb) {
-		this.addObject(makeBanana(this.w));
+	
+		//new calc for superB
+		prob = Math.random() * 1000;
+		if (prob <= superBanProb) {
+		
+			var superBanana = makeBanana(this.w);
+			superBanana.w = superBanana.w * 2;
+			superBanana.h = superBanana.h * 2;
+			superBanana.points = 5;
+			
+			this.addObject(superBanana);
+		} else {
+			this.addObject(makeBanana(this.w));
+		}
 	}
 	
+	//calc for apple
+	var prob = Math.random() * 1000;
 	if (prob < appleProb) {
 		this.addObject(makeApple(this.w));
 	}
