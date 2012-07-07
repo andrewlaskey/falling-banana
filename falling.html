@@ -79,7 +79,14 @@
 		//main game loop
 		gameLoop();
 		
+		function displayTest(output){
+			//Set the text font and color
+			ctx.fillStyle = 'rgb(255,255,255)';
+			ctx.font = "18px Helvetica, Ariel";
+
+			ctx.fillText(output ,30,30);
 		
+		}
 		
 		var loop;
 		var fps = 60;
@@ -91,6 +98,7 @@
 				gWorld.drawGame(ctx);
 				gWorld.removeDeadObjects();
 				gWorld.addNewObjects();
+				//displayTest(gWorld.levelUp.diffInc);
 				
 				
 			}, 1000 / fps);

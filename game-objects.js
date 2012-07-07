@@ -45,6 +45,7 @@ function gameWorld (gravity) {
  	this.gameObjects = [];
  	this.keyPressed = { right:false, left:false, up:false };
  	this.background = drawForrest;
+ 	this.levelUp = { diffInc: 5, next: 15, allow: false};
 }
 
 gameWorld.prototype.addObject = function(newGameObject) {
@@ -164,7 +165,7 @@ gameWorld.prototype.drawGame = function(ctx) {
 
 gameWorld.prototype.addNewObjects = function() {
 	var bananaProb = 50;
-	var appleProb = 10;
+	var appleProb = 30 + this.levelUp.diffInc;
 	var superBanProb = 200;
 	
 	//calc for banana prob
@@ -186,9 +187,19 @@ gameWorld.prototype.addNewObjects = function() {
 		}
 	}
 	
+	//check to see if need to increase difficulty
+	if (this.score >= this.levelUp.next) {
+		if (this.levelUp.allow) {
+			this.levelUp.diffInc += 7;
+			this.levelUp.next += 15;
+			this.levelUp.allow = false;
+		}
+	} else {
+		this.levelUp.allow = true;
+	}
 	//calc for apple
 	var prob = Math.random() * 1000;
-	if (prob < appleProb) {
+	if (prob < this.appleProb) {
 		this.addObject(makeApple(this.w));
 	}
 	
