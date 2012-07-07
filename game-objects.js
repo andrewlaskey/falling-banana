@@ -334,12 +334,12 @@ var walkerMove = function(gravity) {
 
 	} else {
 		this.vX = 0;
-		var moveProb = Math.random() * 100;
+		var moveProb = Math.random() * 1000;
 		
-		if (moveProb < 1) {
+		if (moveProb < 5) {
 			this.startWalker = true;
 			this.mode = 'ADVANCE';
-			dist = Math.random() * 250;
+			dist = Math.random() * 200 + (this.w * .5);
 			if (this.startSide == 'LEFT') {this.maxX = this.x + dist;}
 			if (this.startSide == 'RIGHT') {this.maxX = this.x - dist;}
 			walkerSnd.play();
