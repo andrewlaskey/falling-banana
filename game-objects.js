@@ -72,6 +72,7 @@ gameWorld.prototype.updateGameObjects = function() {
 						
 						if (this.gameObjects[i].giveDamage && this.gameObjects[l].destructable) {
 							this.gameObjects[l].life -= this.gameObjects[i].damage;
+							hitSnd.play();
 						}
 						
 						if (this.gameObjects[i].destructable && this.gameObjects[i].type != 'player') {
@@ -81,6 +82,7 @@ gameWorld.prototype.updateGameObjects = function() {
 						
 						if (this.gameObjects[i].givePoint && this.gameObjects[l].type == 'player') {
 							this.score += this.gameObjects[i].points;
+							pointSnd.play();
 						}
 						
 						if (this.gameObjects[i].type == 'player') {
@@ -199,7 +201,7 @@ gameWorld.prototype.addNewObjects = function() {
 	}
 	//calc for apple
 	var prob = Math.random() * 1000;
-	if (prob < this.appleProb) {
+	if (prob < appleProb) {
 		this.addObject(makeApple(this.w));
 	}
 	
@@ -262,10 +264,12 @@ function userControlled(gObj) {
 		if (keyPressed.right) {
 			this.vX += speed;
 			this.animate = true;
+			stepSnd.play();
 		}
 		if (keyPressed.left) {
 			this.vX += speed * -1;
 			this.animate = true;
+			stepSnd.play();
 		}
 		
 		/*gravity and jump testing
@@ -298,6 +302,7 @@ var walkerMove = function(gravity) {
 				this.vX = speed;
 				if (this.x + this.vX >= this.maxX) {
 					this.mode = 'RETREAT';
+					walkerLeaveSnd.play();
 				}
 			}//end LEFT ADVANCE
 			
@@ -314,6 +319,7 @@ var walkerMove = function(gravity) {
 				this.vX = speed * -1;
 				if (this.x + this.vX <= this.maxX) {
 					this.mode = 'RETREAT';
+					walkerLeaveSnd.play();
 				}
 			}//end RIGHT ADVANCE
 			
@@ -336,6 +342,7 @@ var walkerMove = function(gravity) {
 			dist = Math.random() * 250;
 			if (this.startSide == 'LEFT') {this.maxX = this.x + dist;}
 			if (this.startSide == 'RIGHT') {this.maxX = this.x - dist;}
+			walkerSnd.play();
 		}	
 	}	
 }
