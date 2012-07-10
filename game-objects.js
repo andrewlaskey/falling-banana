@@ -46,6 +46,7 @@ function gameWorld (gravity) {
  	this.keyPressed = { right:false, left:false, up:false };
  	this.background = drawForrest;
  	this.levelUp = { diffInc: 5, next: 15, allow: false};
+ 	this.state = 'MAIN';
 }
 
 gameWorld.prototype.addObject = function(newGameObject) {
