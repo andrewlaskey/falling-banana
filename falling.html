@@ -129,6 +129,21 @@
 				}
 			}
 			
+			if (e.keyCode === 39) {
+				gWorld.keyPressed.right = true;
+			} else if (e.keyCode === 37){
+				gWorld.keyPressed.left = true;
+			}
+			
+	
+		});
+		
+		window.addEventListener('keyup', function(e) {
+			if (e.keyCode === 39) {
+				gWorld.keyPressed.right = false;
+			} else if (e.keyCode === 37){
+				gWorld.keyPressed.left = false;
+			}
 		});
 		//--------------------------------------------
 		
@@ -157,22 +172,6 @@
 			gWorld.addObject(makeWalker(gWorld.w, gWorld.h));
 			gWorld.addObject(makeWalker(gWorld.w, gWorld.h,true));
 			gWorld.addObject(makePlayer());
-			
-			$(document).keydown(function(evt) {
-				if (evt.keyCode == 39) {
-					gWorld.keyPressed.right = true;
-				} else if (evt.keyCode == 37){
-					gWorld.keyPressed.left = true;
-				}
-			});       
-	
-			$(document).keyup(function(evt) {
-				if (evt.keyCode == 39) {
-					gWorld.keyPressed.right = false;
-				} else if (evt.keyCode == 37){
-					gWorld.keyPressed.left = false;
-				}
-			}); 
 			
 			gameLoop();
 		}
