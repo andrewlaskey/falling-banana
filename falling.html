@@ -82,6 +82,10 @@
 		var cvs = document.getElementById('canvas');
 		var ctx = canvas.getContext('2d');
 		
+		//animation
+		var loop;
+		var fps = 60;
+		
 		//the game world that runs it all
 		var gWorld = new gameWorld(6);
 		gWorld.w = cvs.width;
@@ -110,11 +114,21 @@
 		});
 		
 		window.addEventListener('keydown', function(e) {
-			if (gWorld.state === 'MAIN') {
-				if (e.keyCode === 13) {
+			if (e.keyCode === 13) {
+				if (gWorld.state === 'MAIN') {
 					startGame();
 				}
 			}
+			
+			if (e.keyCode === 80) {
+				if (gWorld.state === 'RUNNING') {
+					gWorld.state = 'PAUSE';
+				} else if (gWorld.state === 'PAUSE') {
+					gWorld.state = 'RUNNING';
+					gameLoop();
+				}
+			}
+			
 		});
 		//--------------------------------------------
 		
@@ -165,16 +179,19 @@
 		//--------------------------------------------
 		
 		//ANIMATE AND UPDATE GAMELOOP----------------
-		var loop;
-		var fps = 60;
 		function gameLoop() {
 			setTimeout(function() {
-				loop = window.requestAnimationFrame(gameLoop);
-				
+
+					loop = window.requestAnimationFrame(gameLoop);
+					
 					gWorld.updateGameObjects();
 					gWorld.drawGame(ctx);
 					gWorld.removeDeadObjects();
 					gWorld.addNewObjects();
+				
+				if (gWorld.state === 'PAUSE') {
+					window.cancelAnimationFrame(loop);
+				}
 
 			}, 1000 / fps);
 		}
