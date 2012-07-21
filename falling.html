@@ -114,12 +114,14 @@
 		});
 		
 		window.addEventListener('keydown', function(e) {
+			//on main screen "enter" = start
 			if (e.keyCode === 13) {
 				if (gWorld.state === 'MAIN') {
 					startGame();
 				}
 			}
 			
+			//"p" = pause
 			if (e.keyCode === 80) {
 				if (gWorld.state === 'RUNNING') {
 					gWorld.state = 'PAUSE';
@@ -129,16 +131,28 @@
 				}
 			}
 			
+			//"s" = toggle sound
+			if (e.keyCode === 83) {
+				if (gWorld.sound) {
+					gWorld.sound = false;
+				} else {
+					gWorld.sound = true
+				}
+			}
+			
+			//"arrow right" = move right
+			//"arrow left" = move left
 			if (e.keyCode === 39) {
 				gWorld.keyPressed.right = true;
 			} else if (e.keyCode === 37){
 				gWorld.keyPressed.left = true;
 			}
 			
-	
+			
 		});
 		
 		window.addEventListener('keyup', function(e) {
+			//stop moving
 			if (e.keyCode === 39) {
 				gWorld.keyPressed.right = false;
 			} else if (e.keyCode === 37){

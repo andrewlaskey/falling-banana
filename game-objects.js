@@ -47,6 +47,7 @@ function gameWorld (gravity) {
  	this.background = drawForrest;
  	this.levelUp = { diffInc: 5, next: 15, allow: false};
  	this.state = 'MAIN';
+ 	this.sound = true;
 }
 
 gameWorld.prototype.addObject = function(newGameObject) {
@@ -56,7 +57,9 @@ gameWorld.prototype.addObject = function(newGameObject) {
 gameWorld.prototype.updateGameObjects = function() {
 	for (var i = 0; i < this.gameObjects.length; i++) {
 		//move the object
-		this.gameObjects[i].move(this.gravity,this.keyPressed);
+		this.gameObjects[i].move({gravity : this.gravity,
+									keyPressed : this.keyPressed,
+									sound : this.sound});
 		
 		//update its position
 		this.gameObjects[i].x += this.gameObjects[i].vX;
@@ -73,7 +76,7 @@ gameWorld.prototype.updateGameObjects = function() {
 						
 						if (this.gameObjects[i].giveDamage && this.gameObjects[l].destructable) {
 							this.gameObjects[l].life -= this.gameObjects[i].damage;
-							hitSnd.play();
+							if (this.sound) { hitSnd.play(); }
 						}
 						
 						if (this.gameObjects[i].destructable && this.gameObjects[i].type != 'player') {
@@ -83,7 +86,7 @@ gameWorld.prototype.updateGameObjects = function() {
 						
 						if (this.gameObjects[i].givePoint && this.gameObjects[l].type == 'player') {
 							this.score += this.gameObjects[i].points;
-							pointSnd.play();
+							if (this.sound) { pointSnd.play(); }
 						}
 						
 						if (this.gameObjects[i].type == 'player') {
@@ -225,8 +228,8 @@ function gameObject(options) {
 //--------------------------------------------
 
 //----------DECORATORS AND SUCH---------------
-var fall = function(gravity) {
-	this.vY = gravity;
+var fall = function(options) {
+	this.vY = options.gravity;
 }
 
 function isSolid(gObj) {
@@ -257,20 +260,20 @@ function givesPoints(gObj) {
 function userControlled(gObj) {
 	var userObj = gObj;
 	userObj.jump = false;
-	userObj.move = function(gravity, keyPressed) {
+	userObj.move = function(options) {
 		var speed = 5;
 
 		this.vX = 0;
 		this.animate = false;
-		if (keyPressed.right) {
+		if (options.keyPressed.right) {
 			this.vX += speed;
 			this.animate = true;
-			stepSnd.play();
+			if (options.sound) { stepSnd.play(); }
 		}
-		if (keyPressed.left) {
+		if (options.keyPressed.left) {
 			this.vX += speed * -1;
 			this.animate = true;
-			stepSnd.play();
+			if (options.sound) { stepSnd.play(); }
 		}
 		
 		/*gravity and jump testing
@@ -295,7 +298,7 @@ function isAnimated(gObj, lastFrame, firstFrame) {
 	return animatedObj;
 }
 
-var walkerMove = function(gravity) {
+var walkerMove = function(options) {
 	var speed = .5;
 	if (this.startWalker) {
 		if (this.startSide == 'LEFT') {
@@ -303,7 +306,7 @@ var walkerMove = function(gravity) {
 				this.vX = speed;
 				if (this.x + this.vX >= this.maxX) {
 					this.mode = 'RETREAT';
-					walkerLeaveSnd.play();
+					if (options.sound) { walkerLeaveSnd.play(); }
 				}
 			}//end LEFT ADVANCE
 			
@@ -320,7 +323,7 @@ var walkerMove = function(gravity) {
 				this.vX = speed * -1;
 				if (this.x + this.vX <= this.maxX) {
 					this.mode = 'RETREAT';
-					walkerLeaveSnd.play();
+					if (options.sound) { walkerLeaveSnd.play(); }
 				}
 			}//end RIGHT ADVANCE
 			
@@ -343,7 +346,7 @@ var walkerMove = function(gravity) {
 			dist = Math.random() * 200 + (this.w * .5);
 			if (this.startSide == 'LEFT') {this.maxX = this.x + dist;}
 			if (this.startSide == 'RIGHT') {this.maxX = this.x - dist;}
-			walkerSnd.play();
+			if (options.sound) { walkerSnd.play(); }
 		}	
 	}	
 }
