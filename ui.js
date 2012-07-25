@@ -4,6 +4,7 @@ function clickBox(options) {
 	this.w = options.w;
 	this.h = options.h;
 	this.active = options.active;
+	this.draw = options.draw || function () { };
 }
 
 clickBox.prototype.testClick = function(clickX, clickY) {

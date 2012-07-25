@@ -410,7 +410,7 @@ var makePlayer = function() {
 	var player = new gameObject({
 		type: 'player',
 		x: 200,
-		y: 336,
+		y: 396,
 		w: 21,
 		h: 38,
 		vX: 0,
@@ -442,7 +442,7 @@ var makeWalker = function(worldW, worldH, rightWall) {
 	var walker = new gameObject({
 		type: 'walker',
 		x:0,
-		y:150,
+		y:210,
 		w:130,
 		h: 225,
 		life:1,

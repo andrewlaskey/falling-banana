@@ -245,3 +245,59 @@ var drawWalker = function(ctx){
 		if (this.l2.mod <= this.l2.min) {this.l2.dir = 'ADD';}
 	}
 }
+
+var pauseImg = function(ctx) {
+	ctx.fillStyle = 'rgb(255,255,255)';
+	//first bar
+	ctx.fillRect(this.x,this.y,this.w * .33,this.h);
+	//second bar
+	ctx.fillRect(this.x + (this.w * .66), this.y, this.w * .33, this.h); 
+}
+
+var playImg = function(ctx) {
+	ctx.fillStyle = 'rgb(255,255,255)';
+	
+	ctx.beginPath();
+	ctx.moveTo(this.x, this.y);
+	ctx.lineTo(this.x, this.y + this.h);
+	ctx.lineTo(this.x + this.w, this.y + this.h * .5);
+	ctx.closePath();
+	ctx.fill();
+}
+
+var soundImg = function(ctx) {
+	ctx.fillStyle = 'rgb(255,255,255)';
+	
+	ctx.beginPath();
+	ctx.moveTo(this.x, this.y + this.h * .4);
+	ctx.lineTo(this.x, this.y + this.h * .6);
+	ctx.lineTo(this.x + this.w * .2, this.y + this.h * .6);
+	ctx.lineTo(this.x + this.w * .5, this.y + this.h);
+	ctx.lineTo(this.x + this.w * .5, this.y);
+	ctx.lineTo(this.x + this.w * .2, this.y + this.h * .4);
+	ctx.closePath();
+	ctx.fill();
+	
+	ctx.strokeStyle = 'rgb(255,255,255)';
+	ctx.beginPath();
+	ctx.arc(this.x + this.w * .5, this.y + this.h * .5, this.w * .3, Math.PI / 3, 5 * Math.PI / 3, true);
+	ctx.stroke();
+	ctx.beginPath();
+	ctx.arc(this.x + this.w * .5, this.y + this.h * .5, this.w * .5, Math.PI / 3, 5 * Math.PI / 3, true);
+	ctx.stroke();
+}
+
+var muteImg = function(ctx) {
+	ctx.fillStyle = 'rgb(255,255,255)';
+	
+	ctx.beginPath();
+	ctx.moveTo(this.x, this.y + this.h * .4);
+	ctx.lineTo(this.x, this.y + this.h * .6);
+	ctx.lineTo(this.x + this.w * .2, this.y + this.h * .6);
+	ctx.lineTo(this.x + this.w * .5, this.y + this.h);
+	ctx.lineTo(this.x + this.w * .5, this.y);
+	ctx.lineTo(this.x + this.w * .2, this.y + this.h * .4);
+	ctx.closePath();
+	ctx.fill();
+
+}
