@@ -152,6 +152,21 @@
 			draw: soundImg
 		});
 			
+		var touchRightBtn = new clickBox({
+			x: cvs.width - 300,
+			y: 30,
+			w: 300,
+			h: cvs.height-50,
+			active: false
+		});
+		
+		var touchLeftBtn = new clickBox({
+			x: 0,
+			y: 30,
+			w: 300,
+			h: cvs.height-50,
+			active: false
+		});
 		//--------------------------------------------
 
 		function togglePause() {
@@ -177,6 +192,13 @@
 		
 		//HANDLING SOME CLICK AND KEY EVENTS----------
 		var hammer = new Hammer(document.getElementById("canvas"));
+		hammer.hold_timeout = 10;
+		
+		hammer.onrelease = function(evt)
+		{
+				gWorld.keyPressed.right = false;
+				gWorld.keyPressed.left = false;
+		}
 		
 		hammer.ontap = function(evt)
 		{
@@ -195,8 +217,30 @@
 			if (soundBtn.testClick(t.x, t.y)) {
 				toggleSound();
 			}
+			
+			if (touchRightBtn.testClick(t.x,t.y)){
+				gWorld.keyPressed.right = true;
+			}
+			
+			if (touchLeftBtn.testClick(t.x,t.y)){
+				gWorld.keyPressed.left = true;
+			}
 
 		}
+		
+		hammer.onhold = function(evt)
+		{
+			var t = getTouchPos(cvs, evt.touches[0].x, evt.touches[0].y);
+			
+			if (touchRightBtn.testClick(t.x,t.y)){
+				gWorld.keyPressed.right = true;
+			}
+			
+			if (touchLeftBtn.testClick(t.x,t.y)){
+				gWorld.keyPressed.left = true;
+			}
+		}
+		
 		
 		/*cvs.addEventListener('mousedown', function(evt)
 		{
@@ -283,6 +327,8 @@
 			
 			pauseBtn.active = true;
 			soundBtn.active = true;
+			touchRightBtn.active = true;
+			touchLeftBtn.active = true;
 			
 			gameLoop();
 		}
