@@ -301,3 +301,77 @@ var muteImg = function(ctx) {
 	ctx.fill();
 
 }
+
+var replayImg = function(ctx) {
+	ctx.fillStyle = 'rgb(242,242,51)';
+	ctx.beginPath();
+	ctx.moveTo(this.x,this.y);
+	ctx.lineTo(this.x - 20,this.y + this.h);
+	ctx.lineTo(this.x + this.w - 20,this.y + this.h);
+	ctx.lineTo(this.x + this.w,this.y);
+	ctx.closePath();
+	ctx.fill();
+	
+	ctx.font = "italic 32px Impact, Helvetica, Ariel";
+	ctx.fillStyle = 'rgb(0,0,0)';
+	ctx.fillText("Replay" ,this.x - 5, this.y + this.h - 7);
+}
+
+var startImg = function(ctx) {
+
+	ctx.fillStyle = 'rgb(255,255,255)';
+	ctx.beginPath();
+	ctx.moveTo(this.x,this.y);
+	ctx.lineTo(this.x - 20,this.y + this.h);
+	ctx.lineTo(this.x + this.w - 20,this.y + this.h);
+	ctx.lineTo(this.x + this.w,this.y);
+	ctx.closePath();
+	ctx.fill();
+	
+	ctx.fillStyle = 'rgb(0,0,0)';
+	ctx.font = "italic 32px Impact, Helvetica, Ariel";
+	ctx.fillText("START", this.x, this.y + this.h - 15);
+}
+
+var startSplash = function(ctx) {
+	ctx.fillStyle = 'rgb(242,242,51)';
+	ctx.beginPath();
+	ctx.moveTo(380,0);
+	ctx.lineTo(80,500);
+	ctx.lineTo(160,500);
+	ctx.lineTo(460,0);
+	ctx.closePath();
+	ctx.fill();
+	
+	ctx.beginPath();
+	ctx.moveTo(490,0);
+	ctx.lineTo(190,500);
+	ctx.lineTo(200,500);
+	ctx.lineTo(510,0);
+	ctx.closePath();
+	ctx.fill();
+	
+	ctx.fillStyle = 'rgb(255,255,255)';
+	ctx.beginPath();
+	ctx.moveTo(700,105);
+	ctx.lineTo(250,105);
+	ctx.lineTo(220,178);
+	ctx.lineTo(700,178);
+	ctx.closePath();
+	ctx.fill();
+	
+	ctx.fillStyle = 'rgb(255,255,255)';
+	ctx.font = "italic 80px Impact, Helvetica, Ariel";
+	ctx.fillText("BANANA",62,100);
+	
+	ctx.fillStyle = 'rgb(0,0,0)';
+	ctx.font = "italic 80px Impact, Helvetica, Ariel";
+	ctx.fillText("DROP",260,172);
+	
+	ctx.fillStyle = 'rgb(255,255,255)';
+	ctx.font = "18px Helvetica, Ariel";
+	ctx.fillText("Catch the falling bananas",370,260);
+	ctx.fillText("Dodge the bombs",370,290);
+	ctx.fillText("Arrow keys move you left and right",370,320);
+	ctx.fillText("(Tap and hold edge of screen on mobile)",370,350);
+}

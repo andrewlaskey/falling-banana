@@ -3,6 +3,7 @@
   <head>
       <meta http-equiv="Content-type" content="text/html; charset=utf-8">
       <title>Falling Bananas</title>
+      <link href='http://fonts.googleapis.com/css?family=Contrail+One' rel='stylesheet' type='text/css'>
       <script src="jquery-1.3.2.min.js"></script>
       <script src="hammer.js"></script>
       <script src="draw-functions.js"></script>
@@ -127,11 +128,12 @@
 		
 		//various UI buttons
 		var startBox = new clickBox({
-				x: 30,
-				y: 60,
+				x: 500,
+				y: 380,
 				w: 100,
 				h: 60,
-				active: true
+				active: true,
+				draw: startImg
 			});
 			
 		var pauseBtn = new clickBox({
@@ -166,6 +168,15 @@
 			w: 300,
 			h: cvs.height-50,
 			active: false
+		});
+		
+		var replayBtn = new clickBox({
+			x: cvs.width / 2 - 50,
+			y: cvs.height /2 + 30,
+			w: 110,
+			h: 40,
+			active: false,
+			draw: replayImg
 		});
 		//--------------------------------------------
 
@@ -225,6 +236,10 @@
 			if (touchLeftBtn.testClick(t.x,t.y)){
 				gWorld.keyPressed.left = true;
 			}
+			
+			if (replayBtn.testClick(t.x, t.y)) {
+				startGame();
+			}
 
 		}
 		
@@ -263,7 +278,7 @@
 		window.addEventListener('keydown', function(e) {
 			//on main screen "enter" = start
 			if (e.keyCode === 13) {
-				if (gWorld.state === 'MAIN') {
+				if (gWorld.state === 'MAIN' || gWorld.state === 'END') {
 					startGame();
 					
 				}
@@ -303,21 +318,31 @@
 		//INTRO AND INSTRUCTIONS----------------------------
 		//the starting screen for game
 		function mainScreen() {
-			ctx.fillStyle = 'rgb(255,255,255)';
-			ctx.font = "18px Helvetica, Ariel";
-
-			ctx.fillText("Falling Bananas" ,30,30);
-			
-			ctx.fillText("Use the arrow keys to catch the bananas." ,30,60);
-			
-			ctx.fillText("Start" ,30,80);
+			startSplash(ctx);
+			startBox.draw(ctx);
 			
 		}
 		//--------------------------------------------
 		
+		//END Game-----------------------------------------
+		function endScreen() {
+			ctx.fillStyle = 'rgb(255,255,255)';
+			ctx.font = "italic 80px Impact, Helvetica, Ariel";
+			
+			ctx.fillText("GAME OVER" ,cvs.width / 2 - 200 ,cvs.height / 2);
+			
+			replayBtn.active = true;
+			replayBtn.draw(ctx);
+		}
+		//-------------------------------------------------
+		
 		//INIT AND RUN GAME-----------------------------------
 		function startGame() {
 			//init the game
+			gWorld = new gameWorld(6);
+			gWorld.w = cvs.width;
+			gWorld.h = cvs.height;
+			
 			gWorld.state = 'RUNNING';
 			gWorld.addObject(makeGround(gWorld.w, gWorld.h));
 			gWorld.addObject(makeCanopy(gWorld.w));
@@ -325,10 +350,12 @@
 			gWorld.addObject(makeWalker(gWorld.w, gWorld.h,true));
 			gWorld.addObject(makePlayer());
 			
+			startBox.active = false;
 			pauseBtn.active = true;
 			soundBtn.active = true;
 			touchRightBtn.active = true;
 			touchLeftBtn.active = true;
+			replayBtn.active = false;
 			
 			gameLoop();
 		}
@@ -348,8 +375,12 @@
 				pauseBtn.draw(ctx);	
 				soundBtn.draw(ctx);
 				
-				if (gWorld.state === 'PAUSE') {
+				if (gWorld.state === 'PAUSE' || gWorld.state === 'END') {
 					window.cancelAnimationFrame(loop);
+					
+					if (gWorld.state === 'END') {
+						endScreen();
+					}
 				}
 
 			}, 1000 / fps);

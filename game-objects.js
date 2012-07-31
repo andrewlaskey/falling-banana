@@ -123,6 +123,9 @@ gameWorld.prototype.updateGameObjects = function() {
 gameWorld.prototype.removeDeadObjects = function() {
 	for (var i = 0; i < this.gameObjects.length; i++) {
 		if (this.gameObjects[i].life <= 0) {
+			if (this.gameObjects[i].type == 'player') {
+				this.state = 'END';
+			}
 			this.gameObjects.splice(i,1);
 		}
 	}
