@@ -1,4 +1,4 @@
-Falling Banana
+Falling Banana / Banana Drop
 ==============
 
 This is an experiment in building a game in HTML5 and JavaScript. I completed this project back July of 2012 and haven't done much besides reorganize the repository since.
