@@ -8,10 +8,12 @@ In the forest you must collect food for your tribe to survive. Catch the bananas
 
 ##Controls
 On desktop:
-	* Arrow keys - Move left and right
-	* p - Pause
-	* s - Toggle sound
+
+* Arrow keys - Move left and right
+* p - Pause
+* s - Toggle sound
 
 On mobile/touch device:
-	* Holding or tapping the game screen edge will move your character left or right.
+
+* Holding or tapping the game screen edge will move your character left or right.
 
